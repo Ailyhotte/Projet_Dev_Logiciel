@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>{{ greetingMessage }}</h1>
+    <img/>
     <button id="downloadButton">Télécharger l'image sélectionnée</button>
     <button @click="fetchImages">Recharger les images</button>
     <select v-model="selectedImageId" v-if="images.length > 0">
