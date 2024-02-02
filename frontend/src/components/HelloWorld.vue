@@ -1,6 +1,7 @@
 <template>
   <div class="gallery-container">
     <h1>{{ GalerieMessage }}</h1>
+    <h1><a href='localhost:8181/test.html'>lien test</a></h1>
     <div class="image-gallery">
       <img v-for="image in images" :key="image.id" :src="getImageUrl(image.id)" />
     </div>
@@ -17,20 +18,51 @@
       <img id="selectedImage" />
     </div>
   </div>
+  <div class="container">
+    <div>
+      <h2>Single File</h2>
+      <hr />
+      <label>File
+        <input type="file" @change="handleFileUpload($event)" />
+      </label>
+      <br>
+      <button @click="submitFile">Submit</button>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import axios, { AxiosResponse } from 'axios';
 
-interface Image {
-  id: number;
-  name: string;
-}
+const props = defineProps(['file']);
+const data = ref({ file: props.file || '' });
+
+const handleFileUpload = (event: Event) => {
+  data.value.file = (event.target as HTMLInputElement).files?.[0] || '';
+};
+
+
+
+const submitFile = () => {
+  let formData = new FormData();
+
+  formData.append('file', data.value.file);
+  axios.post('http://localhost:8181/images', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  }).then(() => {
+    console.log('Image chargée avec succès');
+    fetchImages();
+  }).catch(() => {
+    console.log("erreur chargement de l'image");
+  });
+};
 
 const GalerieMessage = "Galerie de toutes les images disponibles";
-const images = ref([] as Image[]);
-const selectedImageId = ref<number | null>(null);
+const images = ref<Array<{ id: number; name: string }>>([]);
+const selectedImageId = ref(null);
 
 const fetchImages = async () => {
   try {
@@ -48,7 +80,6 @@ const displaySelectedImage = () => {
   const selectedImage = images.value.find(image => image.id === selectedImageId.value);
   if (selectedImage) {
     const imageUrl = getImageUrl(selectedImage.id);
-    // Appeler la fonction avec l'URL de l'image
     downloadAndDisplayImage(imageUrl);
   } else {
     console.error("Image sélectionnée non trouvée.");
@@ -56,55 +87,29 @@ const displaySelectedImage = () => {
 };
 
 const downloadAndDisplayImage = (imageUrl: string): void => {
-  const imageEl = document.getElementById("selectedImage");
-  if (imageEl != null) {
+  const imgContainer = document.getElementById("selectedImage");
+  if (imgContainer != null) {
     axios.get(imageUrl, { responseType: "blob" })
-      .then(function (response: AxiosResponse) {
+      .then((response: AxiosResponse) => {
         const reader = new window.FileReader();
         reader.readAsDataURL(response.data);
-        reader.onload = function () {
+        reader.onload = () => {
           const imageDataUrl = reader.result as string;
-          imageEl.setAttribute("src", imageDataUrl);
+          imgContainer.setAttribute("src", imageDataUrl);
         };
       })
-      .catch(function (error: any) {
+      .catch((error: any) => {
         console.log(error);
       });
   } else {
-    console.warn("L'élément img n'a pas été trouvé dans le document.");
+    console.warn("Image non trouvée");
   }
 };
 
-onMounted(fetchImages);
+onMounted(fetchImages); //appel au lancement de la page
 </script>
 
+
 <style scoped>
-.gallery-container {
-  max-width:fit-content;
-  margin: auto;
-  padding: 20px;
-}
-
-.image-gallery {
-  margin-top: 20px;
-  display: flex;
-  flex-wrap: nowrap; /* Ensure all images are on a single line */
-  /*overflow-x: auto; /* Add horizontal scrollbar if necessary */
-}
-
-.gallery-image {
-  width: 150px; /* Set the desired width for each image */
-  height: auto; /* Maintain aspect ratio */
-  margin-right: 10px; /* Add spacing between images */
-}
-
-.image-controls {
-  margin-top: 20px;
-}
-
-.selected-image {
-  margin-top: 20px;
-}
-
-/* Add more styles as needed */
+@import './MyComponentStyles.vue';
 </style>
