@@ -1,17 +1,20 @@
 <template>
-  <div>
+  <div class="gallery-container">
     <h1>{{ GalerieMessage }}</h1>
-    <div>
+    <div class="image-gallery">
       <img v-for="image in images" :key="image.id" :src="getImageUrl(image.id)" />
     </div>
-    <div>
+
+    <div class="image-controls">
       <select v-model="selectedImageId" @change="displaySelectedImage">
         <option v-for="image in images" :key="image.id" :value="image.id">
           {{ image.name }} (ID: {{ image.id }})
         </option>
       </select>
-      <button @click="displaySelectedImage">Afficher l'image sélectionnée</button>
-      <img id="selectedImage"/>
+    </div>
+
+    <div class="selected-image">
+      <img id="selectedImage" />
     </div>
   </div>
 </template>
@@ -76,5 +79,32 @@ onMounted(fetchImages);
 </script>
 
 <style scoped>
-/* Styles spécifiques au composant vont ici */
+.gallery-container {
+  max-width:fit-content;
+  margin: auto;
+  padding: 20px;
+}
+
+.image-gallery {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: nowrap; /* Ensure all images are on a single line */
+  /*overflow-x: auto; /* Add horizontal scrollbar if necessary */
+}
+
+.gallery-image {
+  width: 150px; /* Set the desired width for each image */
+  height: auto; /* Maintain aspect ratio */
+  margin-right: 10px; /* Add spacing between images */
+}
+
+.image-controls {
+  margin-top: 20px;
+}
+
+.selected-image {
+  margin-top: 20px;
+}
+
+/* Add more styles as needed */
 </style>
