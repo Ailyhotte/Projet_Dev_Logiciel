@@ -1,32 +1,31 @@
 <template>
   <div>
-    <h1>{{ greetingMessage }}</h1>
-    <img/>
-    <button id="downloadButton">Télécharger l'image sélectionnée</button>
-    <button @click="fetchImages">Recharger les images</button>
-    <select v-model="selectedImageId" v-if="images.length > 0">
-      <option v-for="image in images" :key="image.id" :value="image.id">
-        {{ image.name }} (ID: {{ image.id }})
-      </option>
-    </select>
-    <div v-else>
-      Chargement en cours...
+    <h1>{{ GalerieMessage }}</h1>
+    <div>
+      <img v-for="image in images" :key="image.id" :src="getImageUrl(image.id)" />
+    </div>
+    <div>
+      <select v-model="selectedImageId" @change="displaySelectedImage">
+        <option v-for="image in images" :key="image.id" :value="image.id">
+          {{ image.name }} (ID: {{ image.id }})
+        </option>
+      </select>
+      <button @click="displaySelectedImage">Afficher l'image sélectionnée</button>
+      <img id="selectedImage"/>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, defineEmits } from 'vue'
-import axios from 'axios';
+import { ref, onMounted } from 'vue';
+import axios, { AxiosResponse } from 'axios';
 
-const props = defineProps(['msg']);
-const emits = defineEmits(['downloadSelectedImage']);
 interface Image {
   id: number;
   name: string;
 }
 
-const greetingMessage = "Bienvenue dans mon projet Vue !";
+const GalerieMessage = "Galerie de toutes les images disponibles";
 const images = ref([] as Image[]);
 const selectedImageId = ref<number | null>(null);
 
@@ -35,43 +34,35 @@ const fetchImages = async () => {
     const response = await axios.get('/images');
     images.value = response.data;
     console.log('Liste des images récupérée avec succès:', images.value);
-
-    // Maintenant que le composant est monté, récupérer l'élément du bouton
-    const downloadButton = document.getElementById("downloadButton");
-    if (downloadButton) {
-      downloadButton.addEventListener("click", function () {
-        const selectedImage = images.value.find(image => image.id === selectedImageId.value);
-        if (selectedImage) {
-          const imageUrl = 'images/' + selectedImage.id;
-          console.log(selectedImageId);
-          // Appeler la fonction avec l'URL de l'image
-          downloadAndDisplayImage(imageUrl);
-        } else {
-          console.error("Image sélectionnée non trouvée.");
-        }
-      });
-    } else {
-      console.error("Le bouton n'a pas été trouvé.");
-    }
   } catch (error) {
     console.error('Erreur lors de la récupération des images:', error);
   }
 };
 
-function downloadAndDisplayImage(imageUrl: string): void {
-  const imageEl = document.querySelector("img");
-  console.log('nom du filepath :', imageUrl)
+const getImageUrl = (imageId: number): string => `images/${imageId}`;
 
+const displaySelectedImage = () => {
+  const selectedImage = images.value.find(image => image.id === selectedImageId.value);
+  if (selectedImage) {
+    const imageUrl = getImageUrl(selectedImage.id);
+    // Appeler la fonction avec l'URL de l'image
+    downloadAndDisplayImage(imageUrl);
+  } else {
+    console.error("Image sélectionnée non trouvée.");
+  }
+};
+
+const downloadAndDisplayImage = (imageUrl: string): void => {
+  const imageEl = document.getElementById("selectedImage");
   if (imageEl != null) {
     axios.get(imageUrl, { responseType: "blob" })
-      .then(function (response: any) {
-        console.log('Image récupérée avec succès :', response);
+      .then(function (response: AxiosResponse) {
         const reader = new window.FileReader();
         reader.readAsDataURL(response.data);
         reader.onload = function () {
-          const imageDataUrl = (reader.result as string);
+          const imageDataUrl = reader.result as string;
           imageEl.setAttribute("src", imageDataUrl);
-        }
+        };
       })
       .catch(function (error: any) {
         console.log(error);
@@ -79,10 +70,9 @@ function downloadAndDisplayImage(imageUrl: string): void {
   } else {
     console.warn("L'élément img n'a pas été trouvé dans le document.");
   }
-}
+};
 
-// Appeler fetchImages immédiatement lors de la création du composant
-fetchImages();
+onMounted(fetchImages);
 </script>
 
 <style scoped>
