@@ -1,12 +1,12 @@
 <template>
   <div class="gallery-container">
     <h1>{{ GalerieMessage }}</h1>
-    <h1><a href='localhost:8181/test.html'>lien test</a></h1>
     <div class="image-gallery">
       <img v-for="image in images" :key="image.id" :src="getImageUrl(image.id)" />
     </div>
 
     <div class="image-controls">
+      <h2>Sélectionner une image à afficher individuellement : </h2>
       <select v-model="selectedImageId" @change="displaySelectedImage">
         <option v-for="image in images" :key="image.id" :value="image.id">
           {{ image.name }} (ID: {{ image.id }})
@@ -20,8 +20,6 @@
   </div>
   <div class="container">
     <div>
-      <h2>Single File</h2>
-      <hr />
       <label>File
         <input type="file" @change="handleFileUpload($event)" />
       </label>
