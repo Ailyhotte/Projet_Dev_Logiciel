@@ -104,7 +104,7 @@ const downloadAndDisplayImage = (imageUrl: string): void => {
   }
 };
 
-onMounted(fetchImages); //appel au lancement de la page
+onMounted(fetchImages); //appel au lancement de la page au cas ou il y auraient déja des images sur le serveur tomcat
 </script>
 
 
