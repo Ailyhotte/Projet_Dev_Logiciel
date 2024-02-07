@@ -26,3 +26,18 @@
 .selected-image {
   margin-top: 20px;
 }
+
+.image-and-delete {
+  display: flex;
+  align-items: center;
+}
+
+.image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.image-wrapper {
+  margin-bottom: 10px;
+}

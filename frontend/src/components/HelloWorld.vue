@@ -2,7 +2,14 @@
   <div class="gallery-container">
     <h1>{{ GalerieMessage }}</h1>
     <div class="image-gallery">
-      <img v-for="image in images" :key="image.id" :src="getImageUrl(image.id)" class="gallery-image" :style="{ maxHeight: maxImageHeightGalery }" />
+      <div class="image-and-delete">
+        <div v-for="image in images" :key="image.id" class="image-container">
+          <div class="image-wrapper">
+            <img :src="getImageUrl(image.id)" class="gallery-image" :style="{ maxHeight: maxImageHeightGalery }" />
+          </div>
+          <button @click="deleteImage(image.id)">Supprimer</button>
+        </div>
+      </div>
     </div>
 
     <div class="image-controls">
@@ -15,7 +22,7 @@
     </div>
 
     <div class="selected-image">
-      <img id="selectedImage" :style="{maxHeight: maxSingleImageHeight}" />
+      <img id="selectedImage" :style="{ maxHeight: maxSingleImageHeight }" />
     </div>
   </div>
   <div class="container">
@@ -47,7 +54,7 @@ const handleFileUpload = (event: Event) => {
       console.error('Seuls les fichiers de type JPEG/JPG sont autorisés.');
       (event.target as HTMLInputElement).value = '';
     }
-};
+  };
 }
 
 const submitFile = () => {
@@ -111,6 +118,20 @@ const downloadAndDisplayImage = (imageUrl: string): void => {
       });
   } else {
     console.warn("Image non trouvée");
+  }
+};
+
+const deleteImage = (imageId: number) => {
+  if (confirm("Êtes-vous sûr de vouloir supprimer cette image ?")) {
+    axios.delete(`/images/${imageId}`)
+      .then(() => {
+        console.log("Image supprimée avec succès");
+        // Mettre à jour la liste des images après la suppression
+        fetchImages();
+      })
+      .catch(error => {
+        console.error("Erreur lors de la suppression de l'image :", error);
+      });
   }
 };
 
