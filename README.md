@@ -13,6 +13,8 @@ Pour ce qui est des fonctionnalités spécifiques : La taille des images de la g
 pas toutes la page si l'on upload des images aux dimensions trop grandes.  
 Il y a un check sur le type de fichiers que vous pouvez submit, en effet le site n'accepte que les jpg ou les jpeg.   Sinon cela affiche un message d'erreur dans
 la console.  
-Aussi les images sont automatiquement affichées dans la galerie au moment ou elles sont upload dans le serveur.
+Aussi les images sont automatiquement affichées dans la galerie au moment ou elles sont upload dans le serveur.  
+Enfin, il est possible de supprimer une image en cliquant sur le bouton supprimer qui lui est associé (juste en dessous de l'image).  
+Cela aura pour effet de la retirer de la galerie, et aussi du choix pour l'afficher en plus grand.  
 Si les fichiers ne fonctionnent pas correctement, voici le lien github du projet au cas ou :  
 https://github.com/Ailyhotte/Projet_Dev_Logiciel
