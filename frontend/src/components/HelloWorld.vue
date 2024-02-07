@@ -2,7 +2,7 @@
   <div class="gallery-container">
     <h1>{{ GalerieMessage }}</h1>
     <div class="image-gallery">
-      <img v-for="image in images" :key="image.id" :src="getImageUrl(image.id)" />
+      <img v-for="image in images" :key="image.id" :src="getImageUrl(image.id)" class="gallery-image" :style="{ maxHeight: maxImageHeightGalery }" />
     </div>
 
     <div class="image-controls">
@@ -15,7 +15,7 @@
     </div>
 
     <div class="selected-image">
-      <img id="selectedImage" />
+      <img id="selectedImage" :style="{maxHeight: maxSingleImageHeight}" />
     </div>
   </div>
   <div class="container">
@@ -40,8 +40,6 @@ const handleFileUpload = (event: Event) => {
   data.value.file = (event.target as HTMLInputElement).files?.[0] || '';
 };
 
-
-
 const submitFile = () => {
   let formData = new FormData();
 
@@ -61,6 +59,8 @@ const submitFile = () => {
 const GalerieMessage = "Galerie de toutes les images disponibles";
 const images = ref<Array<{ id: number; name: string }>>([]);
 const selectedImageId = ref(null);
+const maxImageHeightGalery = ref('25vh');
+const maxSingleImageHeight = ref('50vh');
 
 const fetchImages = async () => {
   try {
@@ -104,9 +104,8 @@ const downloadAndDisplayImage = (imageUrl: string): void => {
   }
 };
 
-onMounted(fetchImages); //appel au lancement de la page au cas ou il y auraient déja des images sur le serveur tomcat
+onMounted(fetchImages); // Appel au lancement de la page au cas où il y aurait déjà des images sur le serveur Tomcat
 </script>
-
 
 <style scoped>
 @import './MyComponentStyles.vue';

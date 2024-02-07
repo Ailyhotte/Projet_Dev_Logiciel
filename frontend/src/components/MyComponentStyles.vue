@@ -15,6 +15,8 @@
   width: 100px;
   height: auto;
   margin-right: 10px;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .image-controls {
