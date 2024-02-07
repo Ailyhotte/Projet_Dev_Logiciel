@@ -37,8 +37,18 @@ const props = defineProps(['file']);
 const data = ref({ file: props.file || '' });
 
 const handleFileUpload = (event: Event) => {
-  data.value.file = (event.target as HTMLInputElement).files?.[0] || '';
+  const file = (event.target as HTMLInputElement).files?.[0];
+  //data.value.file = (event.target as HTMLInputElement).files?.[0] || '';
+  if (file) {
+    const allowedTypes = ['image/jpeg', 'image/jpg'];
+    if (allowedTypes.includes(file.type)) {
+      data.value.file = file;
+    } else {
+      console.error('Seuls les fichiers de type JPEG/JPG sont autorisés.');
+      (event.target as HTMLInputElement).value = '';
+    }
 };
+}
 
 const submitFile = () => {
   let formData = new FormData();
